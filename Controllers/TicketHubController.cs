@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Storage.Queues;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.InteropServices.Marshalling;
+using System.Text.Json;
 
 namespace TicketHub.Controllers
 {
@@ -25,7 +28,7 @@ namespace TicketHub.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Customer customer)
+        public async Task<IActionResult> Post(Customer customer)
         {
 
             if (ModelState.IsValid == false)
@@ -33,12 +36,25 @@ namespace TicketHub.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (customer.CreditCard.Length != 16 || !customer.CreditCard.All(char.IsDigit))
+            string queueName = "tickethub";
+
+            // Get connection string from secrets.json
+            string? connectionString = _configuration["AzureStorageConnectionString"];
+
+            if (string.IsNullOrEmpty(connectionString))
             {
-                return BadRequest("Invalid credit card number.");
+                return BadRequest("An error was encountered");
             }
 
-            return Ok("Hello " + customer.Name + " from Ticket Hub Controller");
+            QueueClient queueClient = new QueueClient(connectionString, queueName);
+
+            // serialize an object to json
+            string message = JsonSerializer.Serialize(customer);
+
+            // send string message to queue
+            await queueClient.SendMessageAsync(message);
+
+            return Ok("Hello " + customer.Name + ". Customer Information sent to storage queue");
         }
 
     }
