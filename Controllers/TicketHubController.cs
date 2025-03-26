@@ -28,12 +28,15 @@ namespace TicketHub.Controllers
         public IActionResult Post(Customer customer)
         {
 
-            if (string.IsNullOrEmpty(customer.CreditCard) || customer.CreditCard.Length != 16 || !customer.CreditCard.All(char.IsDigit))
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (customer.CreditCard.Length != 16 || !customer.CreditCard.All(char.IsDigit))
             {
                 return BadRequest("Invalid credit card number.");
             }
-
-
 
             return Ok("Hello " + customer.Name + " from Ticket Hub Controller");
         }
