@@ -56,6 +56,5 @@ namespace TicketHub.Controllers
 
             return Ok("Hello " + customer.Name + ". Customer Information sent to storage queue");
         }
-
     }
 }
