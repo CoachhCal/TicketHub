@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices.Marshalling;
+using System.Text;
 using System.Text.Json;
 
 namespace TicketHub.Controllers
@@ -52,7 +53,10 @@ namespace TicketHub.Controllers
             string message = JsonSerializer.Serialize(customer);
 
             // send string message to queue
-            await queueClient.SendMessageAsync(message);
+            //await queueClient.SendMessageAsync(message);
+
+            var plainTextBytes = Encoding.UTF8.GetBytes(message);
+            await queueClient.SendMessageAsync(Convert.ToBase64String(plainTextBytes));
 
             return Ok("Hello " + customer.Name + ". Customer Information sent to storage queue");
         }

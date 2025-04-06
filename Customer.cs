@@ -31,7 +31,7 @@ namespace TicketHub
         public string Expiration { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Security code is required")]
-        [RegularExpression(@"^\d{3}$", ErrorMessage = "Credit Card must be exactly 16 digits")]
+        [RegularExpression(@"^\d{3}$", ErrorMessage = "Security code must be exactly 3 digits")]
         public string SecurityCode { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Address is required")]
